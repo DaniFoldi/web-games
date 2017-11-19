@@ -15,6 +15,291 @@
         </canvas>
     </center>
     <script>
+        var canvasTag = document.getElementById("canvas");
+        var canvas = canvasTag.getContext("2d");
+        var width = 10;
+        var height = 20;
+        var size = 30;
+        var voffset = 150;
+        var hoffset = 50;
+        var score = 0;
+        var mainTimer;
+        var szCount = 0;
+        var isNew = false;
+
+        var board = [];
+
+        var keys = [false, false, false, false, false];
+
+        var block;
+        var blockX = 0;
+        var blockY = 0;
+        var rotation = 0;
+
+        var pieces = [{
+        	matrix: [],
+        	color: "aqua",
+        	isSZ: false,
+        	maxRotationShift: 2,
+        	rotationPhases: [[[".", "X", ".", "."], [".", "X", ".", "."], [".", "X", ".", "."], [".", "X", ".", "."]], [[".", ".", ".", "."], ["X", "X", "X", "X"], [".", ".", ".", "."], [".", ".", ".", "."]]]
+        }, {
+        	matrix: [],
+        	color: "orange",
+        	isSZ: false,
+        	maxRotationShift: 1,
+        	rotationPhases: [[[".", "X", ".", "."], [".", "X", ".", "."], [".", "X", "X", "."], [".", ".", ".", "."]], [[".", ".", "X", "."], ["X", "X", "X", "."], [".", ".", ".", "."], [".", ".", ".", "."]], [["X", "X", ".", "."], [".", "X", ".", "."], [".", "X", ".", "."], [".", ".", ".", "."]], [[".", ".", ".", "."], ["X", "X", "X", "."], ["X", ".", ".", "."], [".", ".", ".", "."]]]
+        }, {
+        	matrix: [],
+        	color: "orange",
+        	isSZ: false,
+        	maxRotationShift: 1,
+        	rotationPhases: [[[".", "X", ".", "."], [".", "X", ".", "."], ["X", "X", ".", "."], [".", ".", ".", "."]], [[".", ".", ".", "."], ["X", "X", "X", "."], [".", ".", "X", "."], [".", ".", ".", "."]], [[".", "X", "X", "."], [".", "X", ".", "."], [".", "X", ".", "."], [".", ".", ".", "."]], [["X", ".", ".", "."], ["X", "X", "X", "."], [".", ".", ".", "."], [".", ".", ".", "."]]]
+        }, {
+        	matrix: [],
+        	color: "yellow",
+        	isSZ: false,
+        	maxRotationShift: 0,
+        	rotationPhases: [[[".", ".", ".", "."], [".", "X", "X", "."], [".", "X", "X", "."], [".", ".", ".", "."]]]
+        }, {
+        	matrix: [],
+        	color: "purple",
+        	isSZ: false,
+        	maxRotationShift: 1,
+        	rotationPhases: [[[".", ".", ".", "."], ["X", "X", "X", "."], [".", "X", ".", "."], [".", ".", ".", "."]], [[".", "X", ".", "."], [".", "X", "X", "."], [".", "X", ".", "."], [".", ".", ".", "."]], [[".", "X", ".", "."], ["X", "X", "X", "."], [".", ".", ".", "."], [".", ".", ".", "."]], [[".", "X", "", "."], ["X", "X", ".", "."], [".", "X", ".", "."], [".", ".", ".", "."]]]
+        }, {
+        	matrix: [],
+        	color: "red",
+        	isSZ: true,
+        	maxRotationShift: 1,
+        	rotationPhases: [[[".", ".", ".", "."], ["X", "X", ".", "."], [".", "X", "X", "."], [".", ".", ".", "."]], [[".", "X", ".", "."], ["X", "X", ".", "."], ["X", ".", ".", "."], [".", ".", ".", "."]]]
+        }, {
+        	matrix: [],
+        	color: "green",
+        	isSZ: true,
+        	maxRotationShift: 1,
+        	rotationPhases: [[[".", ".", ".", "."], [".", "X", "X", "."], ["X", "X", ".", "."], [".", ".", ".", "."]], [["X", ".", ".", "."], ["X", "X", ".", "."], [".", "X", ".", "."], [".", ".", ".", "."]]]
+        }];
+
+        window.onload = reset;
+
+        function reset() {
+        	newBlock();
+            board = [];
+            for (var i = 0; i < height; i++) {
+                board.push([]);
+                for (var j = 0; j < width; j++) {
+                    board[i].push("");
+                }
+            }
+            document.addEventListener("keydown", function(event) {
+            	if (keys.indexOf(true) == -1) {
+            		isNew = false;
+            	}
+                var key = event.which ? event.which : event.key;
+                switch (key) {
+                    case 37:
+                    	if (!isNew && !collide(block.matrix, blockX - 1, blockY)) {
+                    		blockX--;
+                    		draw();
+                    		check();
+                    	}
+                    	keys[0] = true;
+                        break;
+                    case 39:
+                    	if (!isNew && !collide(block.matrix, blockX + 1, blockY)) {
+                    		blockX++;
+                    		draw();
+                    		check();
+                    	}
+                    	keys[1] = true;
+                        break;
+                    case 40:
+                    	if (!isNew && !collide(block.matrix, blockX, blockY + 1)) {
+                    		blockY++;
+                    		draw();
+                    		check();
+                    	}
+                    	keys[2] = true;
+                        break;
+                    case 65:
+                    	if (!isNew && !keys[3]) {
+                    		for (var i = 0; i <= block.maxRotationShift; i++) {
+               					if (!collide(block.rotationPhases[(rotation + 1) % block.rotationPhases.length], blockX + i, blockY)) {
+                    				rotation = (rotation + 1) % block.rotationPhases.length;
+                    				blockX += i;
+                    				block.matrix = block.rotationPhases[rotation];
+                    				draw();
+                    				check();
+                    				break;
+                    			}
+                    			if (!collide(block.rotationPhases[(rotation + 1) % block.rotationPhases.length], blockX - i, blockY)) {
+                    				rotation = (rotation + 1) % block.rotationPhases.length;
+                    				blockX -= i;
+                    				block.matrix = block.rotationPhases[rotation];
+                    				draw();
+                    				check();
+                    				break;
+                    			}	
+                    		}
+                    	}
+                    	keys[3] = true;
+                        break;
+                    case 68:
+                    	keys[4] = true;
+                        break;
+                }
+            });
+            document.addEventListener("keyup", function(event) {
+            	var key = event.which ? event.which : event.key;
+                switch (key) {
+                    case 37:
+                    	keys[0] = false;
+                    	break;
+                    case 39:
+                    	keys[1] = false;
+                        break;
+                    case 40:
+                    	keys[2] = false;
+                        break;
+                    case 65:
+                    	keys[3] = false;
+                        break;
+                    case 68:
+                    	keys[4] = false;
+                        break;
+                }
+            })
+            newBlock();
+        }
+
+        function newBlock() {
+        	clearInterval(mainTimer);
+        	mainTimer = setInterval(gameTick, 1000);
+        	isNew = true;
+        	blockX = 3;
+        	blockY = -3;
+        	if (szCount > 4) {
+        		block = pieces[Math.floor(Math.random() * (pieces.length - 2))];
+        	} else {
+        		block = pieces[Math.floor(Math.random() * pieces.length)];
+        	}
+        	if (block.isSZ) {
+        		szCount++;
+        	} else {
+        		szCount = 0;
+        	}
+        	block.matrix = block.rotationPhases[0];
+        	rotation = 0;
+        	var down = false;
+        	do {
+        		down = false;
+        		for (var i = 0; i < 4; i++) {
+        			for (var j = 0; j < 4; j++) {
+        				if (block.matrix[i][j] == "X" && blockY + i < 0) {
+        					down = true;
+        					break;
+        				}
+        			}
+        		}
+        		if (down) {
+        			blockY++;
+        		}
+        	} while (down);
+        	blockY--;
+        }
+
+        function collide(matrix, x, y) {
+        	if (x < -3 || x > width + 1 || y > height - 1) {
+        		return true;
+        	}
+        	for (var i = 0; i < 4; i++) {
+        		for (var j = 0; j < 4; j++) {
+        			if (matrix[i][j] == ".") {
+        				continue;
+        			}
+        			if ((y + i < 0 || y + i > height - 1 || x + j < 0 || x + j > width - 1)) {
+        				return true;
+        			}
+        			if (board[y + i][x + j] != "") {
+        				return true;
+        			}
+        		}
+        	}
+        	return false;
+        }
+
+        function fill(x, y, color) {
+        	canvas.fillStyle = color;
+        	if (color == "grey") {
+        		canvas.fillRect(voffset + size * y + 1, hoffset + size * x + 1, size - 2, size - 2);
+        	} else {
+        		canvas.fillRect(voffset + size * y, hoffset + size * x, size, size);
+        	}
+        }
+
+        function draw() {
+        	canvas.fillStyle = "black";
+            canvas.fillRect(0, 0, canvasTag.width, canvasTag.height);
+            for (var i = 0; i < height; i++) {
+                for (var j = 0; j < width; j++) {
+                	if (board[i][j] == "") {
+                		fill(i, j, "grey");
+                	} else {
+	                    fill(i, j, board[i][j]);
+    				}
+                }
+            }
+            for (var i = 0; i < 4; i++) {
+            	for (var j = 0; j < 4; j++) {
+            		if (block.matrix[i][j] == "X") {
+	            		fill(blockY + i, blockX + j, block.color);
+    				}
+            	}
+            }
+            canvas.fillStyle = "white";
+            canvas.textAlign = "center";
+            canvas.font = "30px Sans-Serif";
+            canvas.fillText("Score: " + score, 300, 40);
+        }
+
+        function check() {
+        	if (collide(block.matrix, blockX, blockY + 1)) {
+        		for (var i = 0; i < 4; i++) {
+        			for (var j = 0; j < 4; j++) {
+        				if (block.matrix[i][j] == "X") {
+        					board[blockY + i][blockX + j] = block.color;
+        				}
+        			}
+        		}
+        		var rows = 0;
+        		for (var i = 0; i < height; i++) {
+        			var count = 0;
+        			for (var j = 0; j < width; j++) {
+        				if (board[i][j] != "") {
+        					count++;
+        				}
+        			}
+        			if (count == width) {
+        				rows++;
+        				for (var k = i; k > 1; k--) {
+        					for (var l = 0; l < width; l++) {
+        						board[k][l] = board[k - 1][l];
+        					}
+        				}
+        				for (var l = 0; l < width; l++) {
+        					board[0][l] = "";
+        				}
+        			}
+        		}
+        		newBlock();
+        	}
+        }
+
+        function gameTick() {
+        	check();
+        	blockY++;
+            draw();
+        }
     </script>
 </body>
 
