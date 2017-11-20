@@ -35,6 +35,7 @@
         var blockX = 0;
         var blockY = 0;
         var rotation = 0;
+        var next = 0;
 
         var pieces = [{
         	matrix: [],
@@ -91,6 +92,9 @@
         }
 
         function reset() {
+        	block = pieces[randomPiece(false)];
+        	next = randomPiece(szCount > 4);
+
         	newBlock();
             board = [];
             for (var i = 0; i < height; i++) {
@@ -200,14 +204,9 @@
             newBlock();
         }
 
-        function newBlock() {
-        	clearInterval(mainTimer);
-        	mainTimer = setInterval(gameTick, 1000);
-        	isNew = true;
-        	blockX = 3;
-        	blockY = -3;
+        function randomPiece(sz) {
         	var id = 0;
-        	if (szCount > 4) {
+        	if (sz) {
         		id = Math.floor(Math.random() * (pieces.length - 3));
         	} else {
         		id = Math.floor(Math.random() * (pieces.length - 1))
@@ -219,7 +218,17 @@
         			id++;
         		}
         	}
-        	block = pieces[id];
+        	return id;
+        }
+
+        function newBlock() {
+        	clearInterval(mainTimer);
+        	mainTimer = setInterval(gameTick, 1000);
+        	isNew = true;
+        	blockX = 3;
+        	blockY = -3;
+        	block = pieces[next];
+        	next = randomPiece(szCount > 4);
         	if (block.isSZ) {
         		szCount++;
         	} else {
@@ -297,6 +306,19 @@
             canvas.textAlign = "center";
             canvas.font = "30px Sans-Serif";
             canvas.fillText("Score: " + score, 300, 40);
+
+            canvas.font = "24px Sans-Serif";
+            canvas.fillText("Next:", 525, 40)
+            canvas.fillStyle = "grey";
+            canvas.fillRect(480, 50, 3 * size, 3 * size);
+            for (var i = 0; i < 4; i++) {
+            	for (var j = 0; j < 4; j++) {
+            		if (pieces[next].rotationPhases[0][i][j] == "X") {
+            			canvas.fillStyle = pieces[next].color;
+            			canvas.fillRect(480 + j * size * 3 / 4, 50 + i * size * 3 / 4, 3 * size / 4, 3 * size / 4);
+            		}
+            	}
+            }
         }
 
         function check() {
