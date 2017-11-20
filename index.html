@@ -283,6 +283,12 @@
         	}
         }
 
+        function stroke(x, y, color) {
+        	canvas.lineWidth = 2;
+        	canvas.strokeStyle = color;
+        	canvas.strokeRect(voffset + size * y + 1, hoffset + size * x + 1, size - 2, size - 2);
+        }
+
         function draw() {
         	canvas.fillStyle = "black";
             canvas.fillRect(0, 0, canvasTag.width, canvasTag.height);
@@ -302,6 +308,21 @@
     				}
             	}
             }
+            var x = blockX;
+            var y = blockY;
+            while (!collide(block.matrix, x, y + 1)) {
+            	y++;
+            }
+
+            console.log(y);
+            for (var i = 0; i < 4; i++) {
+            	for (var j = 0; j < 4; j++) {
+            		if (block.matrix[i][j] == "X") {
+            			stroke(y + i, x + j, block.color);
+            		}
+            	}
+            }
+
             canvas.fillStyle = "white";
             canvas.textAlign = "center";
             canvas.font = "30px Sans-Serif";
