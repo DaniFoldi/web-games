@@ -82,6 +82,14 @@
 
         window.onload = reset;
 
+        function mod(a, b) {
+        	var t = a;
+        	while (t < 0) {
+        		t += b;
+        	}
+        	return t % b;
+        }
+
         function reset() {
         	newBlock();
             board = [];
@@ -124,16 +132,16 @@
                     case 65:
                     	if (!isNew && !keys[3]) {
                     		for (var i = 0; i <= block.maxRotationShift; i++) {
-               					if (!collide(block.rotationPhases[(rotation + 1) % block.rotationPhases.length], blockX + i, blockY)) {
-                    				rotation = (rotation + 1) % block.rotationPhases.length;
+               					if (!collide(block.rotationPhases[mod(rotation + 1, block.rotationPhases.length)], blockX + i, blockY)) {
+               						rotation = mod(rotation + 1, block.rotationPhases.length);
                     				blockX += i;
                     				block.matrix = block.rotationPhases[rotation];
                     				draw();
                     				check();
                     				break;
                     			}
-                    			if (!collide(block.rotationPhases[(rotation + 1) % block.rotationPhases.length], blockX - i, blockY)) {
-                    				rotation = (rotation + 1) % block.rotationPhases.length;
+                    			if (!collide(block.rotationPhases[mod(rotation + 1, block.rotationPhases.length)], blockX - i, blockY)) {
+               						rotation = mod(rotation + 1, block.rotationPhases.length);
                     				blockX -= i;
                     				block.matrix = block.rotationPhases[rotation];
                     				draw();
@@ -147,16 +155,16 @@
                     case 68:
                     	if (!isNew && !keys[4]) {
                     		for (var i = 0; i <= block.maxRotationShift; i++) {
-               					if (!collide(block.rotationPhases[(rotation - 1) % block.rotationPhases.length], blockX + i, blockY)) {
-                    				rotation = (rotation - 1) % block.rotationPhases.length;
+               					if (!collide(block.rotationPhases[mod(rotation - 1, block.rotationPhases.length)], blockX + i, blockY)) {
+                    				rotation = mod(rotation - 1, block.rotationPhases.length);
                     				blockX += i;
                     				block.matrix = block.rotationPhases[rotation];
                     				draw();
                     				check();
                     				break;
                     			}
-                    			if (!collide(block.rotationPhases[(rotation - 1) % block.rotationPhases.length], blockX - i, blockY)) {
-                    				rotation = (rotation - 1) % block.rotationPhases.length;
+                    			if (!collide(block.rotationPhases[mod(rotation - 1, block.rotationPhases.length)], blockX - i, blockY)) {
+                    				rotation = mod(rotation - 1, block.rotationPhases.length);
                     				blockX -= i;
                     				block.matrix = block.rotationPhases[rotation];
                     				draw();
