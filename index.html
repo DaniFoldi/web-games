@@ -38,12 +38,6 @@
 
         var pieces = [{
         	matrix: [],
-        	color: "aqua",
-        	isSZ: false,
-        	maxRotationShift: 2,
-        	rotationPhases: [[[".", "X", ".", "."], [".", "X", ".", "."], [".", "X", ".", "."], [".", "X", ".", "."]], [[".", ".", ".", "."], ["X", "X", "X", "X"], [".", ".", ".", "."], [".", ".", ".", "."]]]
-        }, {
-        	matrix: [],
         	color: "orange",
         	isSZ: false,
         	maxRotationShift: 1,
@@ -57,6 +51,12 @@
         }, {
         	matrix: [],
         	color: "yellow",
+        	isSZ: false,
+        	maxRotationShift: 2,
+        	rotationPhases: [[[".", "X", ".", "."], [".", "X", ".", "."], [".", "X", ".", "."], [".", "X", ".", "."]], [[".", ".", ".", "."], ["X", "X", "X", "X"], [".", ".", ".", "."], [".", ".", ".", "."]]]
+        }, {
+        	matrix: [],
+        	color: "#FFCC00",
         	isSZ: false,
         	maxRotationShift: 0,
         	rotationPhases: [[[".", ".", ".", "."], [".", "X", "X", "."], [".", "X", "X", "."], [".", ".", ".", "."]]]
@@ -198,11 +198,20 @@
         	isNew = true;
         	blockX = 3;
         	blockY = -3;
+        	var id = 0;
         	if (szCount > 4) {
-        		block = pieces[Math.floor(Math.random() * (pieces.length - 2))];
+        		id = Math.floor(Math.random() * (pieces.length - 3));
         	} else {
-        		block = pieces[Math.floor(Math.random() * pieces.length)];
+        		id = Math.floor(Math.random() * (pieces.length - 1))
         	}
+        	if (id > 0) {
+        		id++;
+        	} else {
+        		if (Math.random() > 0.5) {
+        			id++;
+        		}
+        	}
+        	block = pieces[id];
         	if (block.isSZ) {
         		szCount++;
         	} else {
