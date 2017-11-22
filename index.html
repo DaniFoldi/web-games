@@ -322,10 +322,36 @@
             }
 
             console.log(y);
+            canvas.lineWidth = 2;
+            canvas.strokeStyle = block.color;
             for (var i = 0; i < 4; i++) {
             	for (var j = 0; j < 4; j++) {
             		if (block.matrix[i][j] == "X") {
-            			stroke(y + i, x + j, block.color);
+            			if (i == 3 || block.matrix[i + 1][j] == ".") {
+        					canvas.beginPath();
+        					canvas.moveTo(voffset + size * (x + j), hoffset + size * (y + i + 1));
+        					canvas.lineTo(voffset + size * (x + j) + size, hoffset + size * (y + i + 1));
+        					canvas.stroke();
+            			}
+            			if (i == 0 || block.matrix[i - 1][j] == ".") {
+            				canvas.beginPath();
+        					canvas.moveTo(voffset + size * (x + j), hoffset + size * (y + i));
+        					canvas.lineTo(voffset + size * (x + j) + size, hoffset + size * (y + i));
+        					canvas.stroke();
+            			}
+            			if (j == 3 || block.matrix[i][j + 1] == ".") {
+            				canvas.beginPath();
+        					canvas.moveTo(voffset + size * (x + j + 1), hoffset + size * (y + i));
+        					canvas.lineTo(voffset + size * (x + j + 1), hoffset + size * (y + i) + size);
+        					canvas.stroke();
+            			}
+            			if (j == 0 || block.matrix[i][j - 1] == ".") {
+            				canvas.beginPath();
+        					canvas.moveTo(voffset + size * (x + j), hoffset + size * (y + i));
+        					canvas.lineTo(voffset + size * (x + j), hoffset + size * (y + i) + size);
+        					canvas.stroke();
+            			}
+            			//stroke(y + i, x + j, block.color);
             		}
             	}
             }
