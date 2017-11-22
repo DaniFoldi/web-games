@@ -37,6 +37,8 @@
         var rotation = 0;
         var next = 0;
 
+        var pause = false;
+
         var pieces = [{
         	matrix: [],
         	color: "#FF9500",
@@ -108,7 +110,7 @@
                 var key = event.which ? event.which : event.key;
                 switch (key) {
                     case 37:
-                    	if (!isNew && !collide(block.matrix, blockX - 1, blockY)) {
+                    	if (!isNew && !collide(block.matrix, blockX - 1, blockY) && !pause) {
                     		blockX--;
                     		draw();
                     		check();
@@ -116,7 +118,7 @@
                     	keys[0] = true;
                         break;
                     case 39:
-                    	if (!isNew && !collide(block.matrix, blockX + 1, blockY)) {
+                    	if (!isNew && !collide(block.matrix, blockX + 1, blockY) && !pause) {
                     		blockX++;
                     		draw();
                     		check();
@@ -124,7 +126,7 @@
                     	keys[1] = true;
                         break;
                     case 40:
-                    	if (!isNew && !collide(block.matrix, blockX, blockY + 1)) {
+                    	if (!isNew && !collide(block.matrix, blockX, blockY + 1) && !pause) {
                     		blockY++;
                     		draw();
                     		check();
@@ -132,7 +134,7 @@
                     	keys[2] = true;
                         break;
                     case 65:
-                    	if (!isNew && !keys[3]) {
+                    	if (!isNew && !keys[3] && !pause) {
                     		for (var i = 0; i <= block.maxRotationShift; i++) {
                					if (!collide(block.rotationPhases[mod(rotation + 1, block.rotationPhases.length)], blockX + i, blockY)) {
                						rotation = mod(rotation + 1, block.rotationPhases.length);
@@ -155,7 +157,7 @@
                     	keys[3] = true;
                         break;
                     case 68:
-                    	if (!isNew && !keys[4]) {
+                    	if (!isNew && !keys[4] && !pause) {
                     		for (var i = 0; i <= block.maxRotationShift; i++) {
                					if (!collide(block.rotationPhases[mod(rotation - 1, block.rotationPhases.length)], blockX + i, blockY)) {
                     				rotation = mod(rotation - 1, block.rotationPhases.length);
@@ -177,6 +179,13 @@
                     	}
                     	keys[4] = true;
                         break;
+                    case 80:
+                    	pause = !pause;
+                    	if (pause) {
+                    		clearInterval(mainTimer);
+                    	} else {
+							mainTimer = setInterval(gameTick, 1000);
+                    	}
                 }
             });
             document.addEventListener("keyup", function(event) {
