@@ -1,0 +1,11 @@
+#gameCanvas {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	display: block;
+}
+
+body {
+	padding: 0px;
+	margin: 0px;
+}

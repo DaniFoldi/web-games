@@ -1,0 +1,12 @@
+var canvas, context;
+var playerCount = 2;
+var canvasWidth, canvasHeight;
+var blockSize = 20;
+var gridWidth, gridHeight;
+var players = [];
+var apples = [];
+var appleCount = 20;
+var gridOffsetX;
+var gridOffsetY;
+var gameLoop;
+var killPlayers = [];

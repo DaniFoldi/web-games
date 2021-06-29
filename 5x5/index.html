@@ -1,0 +1,30 @@
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>
+		A simple 5x5 game
+	</title>
+	<link rel="stylesheet" href="styles/main.css">
+	<script src="scripts/main.js">
+	</script>
+</head>
+
+<body>
+	<center>
+		<h1>
+		A simple 5x5 game
+		</h1>
+		<canvas id="gameCanvas" width="500" height="500">
+		</canvas>
+		<br>
+		<input type="range" min="3" max="10" step="1" value="5" id="grid">
+		<input type="button" value="Reset" onclick="reset()">
+		<div>
+		Did you know?
+		<br>
+		The game can be solved in under <span id="moveCount">25</span> moves.
+		</div>
+	</center>
+</body>
+</html>
